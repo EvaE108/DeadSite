@@ -37,6 +37,12 @@
     .file-link:hover img {
       filter: brightness(150%) drop-shadow(0 0 10px red);
     }
+
+    #clue {
+      color: black;
+      margin-top: 0.5rem;
+      font-size: 1.1rem;
+    }
   </style>
 </head>
 <body>
@@ -56,9 +62,11 @@
   <a href="/Puzzle-Site-Mess-Around/death/FinalPuzzleKey.png" target="_blank" class="file-link">
     <img src="/Puzzle-Site-Mess-Around/death/folder-icon1.png" alt="Open File">
   </a>
+  <div id="clue"></div>
 
   <script>
     const clue = atob("dGFwZTE=");
+    document.getElementById("clue").innerText = clue;
   </script>
 </body>
 </html>

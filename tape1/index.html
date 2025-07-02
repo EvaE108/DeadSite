@@ -3,16 +3,23 @@
 <head>
   <title>Crime Scene</title>
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       background-color: black;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
+
     img {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover; /* crop to fit screen if needed */
+      max-width: 100%;
+      max-height: 100%;
+      height: auto;
+      width: auto;
     }
   </style>
 </head>

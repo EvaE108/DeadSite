@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Enter the Code</title>
+  <title>Password</title>
   <style>
     body {
       background-color: black;
@@ -29,7 +29,10 @@
 </head>
 <body>
   
-  <p>What's in the box?.</p>
+  <p>What's in the box?.</p> <br>
+  <p>Excuse me, can I have another order of fries? Because my friend here is fat</p><br>
+  <p>I see dead people.</p> <br>
+  <p>We have ten minutes until the ectoplasmic shit hits the fan.</p><br>
   <input type="text" id="password" placeholder="Enter code" onkeydown="checkEnter(event)">
   <div id="result"></div>
 
@@ -45,7 +48,8 @@
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-        const correctHash = 'f8844067f09eb3723d709c05b70154d4e7086703eb22e6aeaf71fc98a9a25b25'; 
+        const correctHash = 'c5fc79e7d8b6fa1695fc0b50a1d36d0f3a0fd2e5f0f13380f4384b42ae37f631';
+
 
         if (hashHex === correctHash) {
           result.textContent = "Password is correct.";

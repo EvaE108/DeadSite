@@ -32,114 +32,125 @@
     const canvas = document.getElementById("maze");
     const ctx = canvas.getContext("2d");
 
-    const cols = 35;
+    const cols = 21;
+    const rows = 21;
     const size = canvas.width / cols;
 
-    // Simpler but navigable maze (1 = wall, 0 = path)
-    const hardcodedMaze = [
-      "11111111111111111111111111111111111",
-      "10000000000000000000000000000000001",
-      "10111111111111111111111111111111001",
-      "10000000000000000000000000000001001",
-      "10111111111111111111111111111001001",
-      "10000000000000000000000000001001001",
-      "10111111111111111111111111001001001",
-      "10000000000000000000000001001001001",
-      "10111111111111111111111001001001001",
-      "10000000000000000000001001001001001",
-      "10111111111111111111001001001001001",
-      "10000000000000000001001001001001001",
-      "10111111111111111001001001001001001",
-      "10000000000000001001001001001001001",
-      "10111111111111001001001001001001001",
-      "10000000000001001001001001001001001",
-      "10111111111001001001001001001001001",
-      "10000000001001001001001001001001001",
-      "10111111001001001001001001001001001",
-      "10000001001001001001001001001001001",
-      "10111001001001001001001001001001001",
-      "10001001001001001001001001001001001",
-      "10101001001001001001001001001001001",
-      "10001001001001001001001001001000001",
-      "10101001001001001001001001001111101",
-      "10001000001001001001001001000000001",
-      "10101111111001001001001111111111101",
-      "10000000000000000000000000000000001",
-      "11111111111111111111111111111111111"
+    // Real, handcrafted maze (1 = wall, 0 = path)
+    const maze = [
+      "111111111111111111111",
+      "100000000010000000001",
+      "101111111010111111101",
+      "101000001010000100001",
+      "101011101011111101111",
+      "101000101000001000001",
+      "101110101111101111101",
+      "100010100000101000001",
+      "111110111110101011111",
+      "100000000000101000001",
+      "101111111111101011111",
+      "101000000000001000001",
+      "101011111111111111101",
+      "100000000000000000001",
+      "111111011111111011101",
+      "100000000100000000001",
+      "101111111101111111111",
+      "100000000001000000001",
+      "111111111101111111101",
+      "100000000000000000001",
+      "111111111111111111111",
     ].map(row => row.split('').map(Number));
 
-    const rows = hardcodedMaze.length;
-    const player = { x: 1, y: 1 };
+    let player = {
+      x: 1,
+      y: 1,
+      px: 1,
+      py: 1,
+      tx: 1,
+      ty: 1,
+      speed: 6 // pixels per frame
+    };
 
-    const letters = [];
-    const letterChars = ["R", "U", "N", "N", "E", "R"];
-
-    function getRandomPathPosition() {
+    const letters = ["R", "U", "N", "N", "E", "R"].map(char => {
       let x, y;
       do {
         x = Math.floor(Math.random() * cols);
         y = Math.floor(Math.random() * rows);
-      } while (hardcodedMaze[y][x] !== 0 || (x === player.x && y === player.y));
-      return { x, y };
-    }
-
-    letterChars.forEach(char => {
-      const pos = getRandomPathPosition();
-      letters.push({ char, found: false, ...pos });
+      } while (maze[y][x] !== 0 || (x === 1 && y === 1));
+      return { char, found: false, x, y };
     });
+
+    let timeLeft = 60;
+    const timer = document.getElementById("timer");
+    timer.textContent = timeLeft;
+
+    setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        resetGame();
+      }
+      timer.textContent = timeLeft;
+    }, 1000);
 
     function drawMaze() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
-          if (hardcodedMaze[y][x] === 1) {
+          if (maze[y][x] === 1) {
             ctx.fillStyle = "red";
             ctx.fillRect(x * size, y * size, size, size);
           }
         }
       }
 
-      // Draw player as white circle
-      ctx.beginPath();
-      ctx.fillStyle = "white";
-      ctx.arc(player.x * size + size / 2, player.y * size + size / 2, size / 3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Draw letters if found
-      letters.forEach(letter => {
-        if (letter.found) {
+      letters.forEach(l => {
+        if (l.found) {
           ctx.fillStyle = "white";
           ctx.font = `${size - 4}px monospace`;
-          ctx.fillText(letter.char, letter.x * size + 3, letter.y * size + size - 6);
+          ctx.fillText(l.char, l.x * size + 3, l.y * size + size - 6);
         }
       });
+
+      ctx.beginPath();
+      ctx.fillStyle = "white";
+      ctx.arc(player.px * size + size / 2, player.py * size + size / 2, size / 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function updatePlayer() {
+      let dx = player.tx - player.px;
+      let dy = player.ty - player.py;
+
+      if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) {
+        player.px = player.tx;
+        player.py = player.ty;
+        return;
+      }
+
+      if (dx !== 0) player.px += Math.sign(dx) * 1 / player.speed;
+      if (dy !== 0) player.py += Math.sign(dy) * 1 / player.speed;
     }
 
     function move(dx, dy) {
-      const newX = player.x + dx;
-      const newY = player.y + dy;
-      if (
-        newX >= 0 && newX < cols &&
-        newY >= 0 && newY < rows &&
-        hardcodedMaze[newY][newX] === 0
-      ) {
-        player.x = newX;
-        player.y = newY;
-        checkLetters();
-        drawMaze();
+      const nx = player.tx + dx;
+      const ny = player.ty + dy;
+      if (nx >= 0 && ny >= 0 && nx < cols && ny < rows && maze[ny][nx] === 0) {
+        player.tx = nx;
+        player.ty = ny;
       }
     }
 
     function checkLetters() {
       letters.forEach(letter => {
-        if (!letter.found && player.x === letter.x && player.y === letter.y) {
+        if (!letter.found && Math.round(player.tx) === letter.x && Math.round(player.ty) === letter.y) {
           letter.found = true;
         }
       });
     }
 
     window.addEventListener("keydown", e => {
+      if (player.px !== player.tx || player.py !== player.ty) return;
       switch (e.key) {
         case "ArrowUp": move(0, -1); break;
         case "ArrowDown": move(0, 1); break;
@@ -148,32 +159,30 @@
       }
     });
 
-    let timeLeft = 60;
-    const timer = document.getElementById("timer");
-
-    const interval = setInterval(() => {
-      timeLeft--;
-      timer.textContent = timeLeft;
-      if (timeLeft <= 0) {
-        resetGame();
-      }
-    }, 1000);
-
     function resetGame() {
-      player.x = 1;
-      player.y = 1;
+      player.x = player.px = player.tx = 1;
+      player.y = player.py = player.ty = 1;
       timeLeft = 60;
-      timer.textContent = timeLeft;
-      letters.forEach(letter => {
-        const newPos = getRandomPathPosition();
-        letter.x = newPos.x;
-        letter.y = newPos.y;
-        letter.found = false;
+      letters.forEach(l => {
+        let x, y;
+        do {
+          x = Math.floor(Math.random() * cols);
+          y = Math.floor(Math.random() * rows);
+        } while (maze[y][x] !== 0);
+        l.x = x;
+        l.y = y;
+        l.found = false;
       });
-      drawMaze();
     }
 
-    drawMaze();
+    function gameLoop() {
+      updatePlayer();
+      checkLetters();
+      drawMaze();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
   </script>
 </body>
 </html>

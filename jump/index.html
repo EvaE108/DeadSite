@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scare</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: black;
+      color: #0f0;
+      font-family: 'Press Start 2P', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .vhs-container {
+      position: relative;
+      width: 80%;
+      max-width: 800px;
+    }
+
+    video {
+      width: 100%;
+      filter: contrast(1.2) brightness(0.8) saturate(1.3);
+    }
+
+    .overlay {
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://i.imgur.com/3Yz5vQz.gif'); /* example VHS gif overlay */
+      mix-blend-mode: screen;
+      opacity: 0.2;
+    }
+
+    .status {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      font-size: 0.8rem;
+      color: #0f0;
+      text-shadow: 0 0 5px #0f0;
+    }
+
+    .arrow {
+      font-size: 2rem;
+      margin-top: 1rem;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="vhs-container">
+    <video id="videoPlayer" controls>
+      <source src="video1.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <div class="overlay"></div>
+    <div class="status">PLAY ▸ 00:00</div>
+  </div>
+
+  <div class="arrow" onclick="nextVideo()">➡️</div>
+
+  <script>
+    const videoList = [
+      "video1.mp4",
+      "video2.mp4",
+      "video3.mp4",
+      "video4.mp4",
+      "video5.mp4"
+    ];
+
+    let currentVideo = 0;
+    const videoPlayer = document.getElementById("videoPlayer");
+
+    function nextVideo() {
+      currentVideo = (currentVideo + 1) % videoList.length;
+      videoPlayer.src = videoList[currentVideo];
+      videoPlayer.play();
+    }
+  </script>
+
+</body>
+</html>

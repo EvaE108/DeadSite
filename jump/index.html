@@ -2,71 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Scare</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <title>VHS Horror Player</title>
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
       background: black;
-      color: #0f0;
-      font-family: 'Press Start 2P', monospace;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
       overflow: hidden;
-    }
-
-    .vhs-container {
-      position: relative;
-      width: 80%;
-      max-width: 800px;
+      height: 100%;
+      width: 100%;
     }
 
     video {
-      width: 100%;
-      filter: contrast(1.2) brightness(0.8) saturate(1.3);
-    }
-
-    .overlay {
-      pointer-events: none;
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      background: url('https://i.imgur.com/3Yz5vQz.gif'); /* example VHS gif overlay */
-      mix-blend-mode: screen;
-      opacity: 0.2;
-    }
-
-    .status {
-      position: absolute;
-      top: 10px;
-      left: 20px;
-      font-size: 0.8rem;
-      color: #0f0;
-      text-shadow: 0 0 5px #0f0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 0;
     }
 
     .arrow {
-      font-size: 2rem;
-      margin-top: 1rem;
+      position: absolute;
+      bottom: 40px;
+      right: 40px;
+      font-size: 3rem;
       color: white;
       cursor: pointer;
+      z-index: 2;
+      user-select: none;
+      text-shadow: 0 0 10px black;
     }
   </style>
 </head>
 <body>
 
-  <div class="vhs-container">
-    <video id="videoPlayer" controls>
-      <source src="video1.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-    <div class="overlay"></div>
-    <div class="status">PLAY ▸ 00:00</div>
-  </div>
+  <video id="videoPlayer" autoplay muted playsinline></video>
 
   <div class="arrow" onclick="nextVideo()">➡️</div>
 
@@ -82,11 +54,20 @@
     let currentVideo = 0;
     const videoPlayer = document.getElementById("videoPlayer");
 
-    function nextVideo() {
-      currentVideo = (currentVideo + 1) % videoList.length;
-      videoPlayer.src = videoList[currentVideo];
+    function playVideo(index) {
+      videoPlayer.src = videoList[index];
+      videoPlayer.load();
+      videoPlayer.currentTime = 0;
       videoPlayer.play();
     }
+
+    function nextVideo() {
+      currentVideo = (currentVideo + 1) % videoList.length;
+      playVideo(currentVideo);
+    }
+
+    // Start with the first video
+    playVideo(currentVideo);
   </script>
 
 </body>

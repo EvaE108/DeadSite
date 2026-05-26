@@ -1,69 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Music</title>
+  <title>Sound Puzzle</title>
 
   <style>
     body {
       background-color: black;
       color: white;
       font-family: Georgia, serif;
-      min-height: 100vh;
       margin: 0;
+      padding: 2rem;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    .puzzle-container {
+    .container {
       text-align: center;
+      max-width: 1000px;
     }
 
     h1 {
       font-weight: normal;
       letter-spacing: 4px;
       color: #ddd;
-      text-shadow: 0 0 12px red;
+      text-shadow: 0 0 12px darkred;
+      margin-bottom: 1rem;
     }
 
-    .letters {
+    .hint {
+      color: #999;
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    .keyboard {
+      color: #777;
+      font-family: monospace;
+      white-space: pre;
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+    }
+
+    .puzzle-row {
       display: flex;
-      gap: 25px;
+      gap: 22px;
       justify-content: center;
-      margin: 40px 0;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
     }
 
     .letter-box {
+      width: 130px;
+      min-height: 170px;
+      border: 1px solid #333;
+      box-shadow: 0 0 12px #250000;
+      padding: 1rem;
+      background-color: #050505;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
+      justify-content: space-between;
     }
 
-    .letter {
-      font-size: 3rem;
-      width: 70px;
-      height: 70px;
-      border-bottom: 2px solid white;
+    .mystery-letter {
+      width: 60px;
+      height: 60px;
+      border-bottom: 2px solid #777;
+      font-size: 2.5rem;
+      color: #aaa;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .path {
       color: #aaa;
+      font-size: 1.5rem;
+      letter-spacing: 4px;
+      min-height: 30px;
+      margin: 12px 0;
     }
 
     button {
-      background-color: #111;
+      background-color: #090909;
       color: white;
       border: 1px solid #555;
-      padding: 10px 15px;
+      padding: 9px 13px;
       cursor: pointer;
       font-family: Georgia, serif;
-      box-shadow: 0 0 8px #400;
+      box-shadow: 0 0 8px #300;
     }
 
     button:hover {
-      background-color: #300;
-      box-shadow: 0 0 15px red;
+      background-color: #250000;
+      box-shadow: 0 0 14px darkred;
     }
 
     input {
@@ -71,151 +103,137 @@
       color: white;
       border: 1px solid #777;
       padding: 10px;
-      font-size: 1rem;
       text-align: center;
-      letter-spacing: 3px;
+      letter-spacing: 5px;
       text-transform: uppercase;
+      font-family: Georgia, serif;
+      font-size: 1rem;
+      width: 180px;
     }
 
     #message {
       margin-top: 20px;
-      color: #aaa;
+      color: #888;
       min-height: 24px;
     }
   </style>
 </head>
 
 <body>
-  <div class="puzzle-container">
-    <h1>The song remembers what the page forgets.</h1>
+  <div class="container">
+    <h1>The sound remembers where to begin.</h1>
 
-    <div class="letters">
+    <p class="hint">
+      Identify the note. Then follow the path.
+    </p>
+
+    <div class="keyboard">
+Q W E R T Y U I O P
+ A S D F G H J K L
+  Z X C V B N M
+    </div>
+
+    <div class="puzzle-row">
       <div class="letter-box">
-        <div class="letter">?</div>
-        <button onclick="playNextNote(0)">Listen</button>
+        <div class="mystery-letter">?</div>
+        <button onclick="playNoteForClue(0)">Listen</button>
+        <div class="path">← ←</div>
       </div>
 
       <div class="letter-box">
-        <div class="letter">?</div>
-        <button onclick="playNextNote(1)">Listen</button>
+        <div class="mystery-letter">?</div>
+        <button onclick="playNoteForClue(1)">Listen</button>
+        <div class="path">← ← ↓</div>
       </div>
 
       <div class="letter-box">
-        <div class="letter">?</div>
-        <button onclick="playNextNote(2)">Listen</button>
+        <div class="mystery-letter">?</div>
+        <button onclick="playNoteForClue(2)">Listen</button>
+        <div class="path">→ → → ↑</div>
       </div>
 
       <div class="letter-box">
-        <div class="letter">?</div>
-        <button onclick="playNextNote(3)">Listen</button>
+        <div class="mystery-letter">?</div>
+        <button onclick="playNoteForClue(3)">Listen</button>
+        <div class="path">↑</div>
       </div>
 
       <div class="letter-box">
-        <div class="letter">?</div>
-        <button onclick="playNextNote(4)">Listen</button>
+        <div class="mystery-letter">?</div>
+        <button onclick="playNoteForClue(4)">Listen</button>
+        <div class="path">stay</div>
+      </div>
+
+      <div class="letter-box">
+        <div class="mystery-letter">?</div>
+        <button onclick="playNoteForClue(5)">Listen</button>
+        <div class="path">↓ → →</div>
       </div>
     </div>
 
-    <input id="answerInput" maxlength="5" placeholder="enter word">
+    <input id="answerInput" maxlength="6" placeholder="enter code">
     <button onclick="checkAnswer()">Submit</button>
 
     <p id="message"></p>
   </div>
 
   <script>
-    // Change this to whatever your 5-letter answer is
-    const correctAnswer = "GHOST";
+    const correctAnswer = "SCREAM";
 
     /*
-      Each group is the sound sequence for one letter.
-      When the player clicks the first button, it plays these notes in order:
-      first click = first note
-      second click = second note
-      third click = third note
-      then it loops back.
+      Change this if your note files are in a different order.
+
+      Right now:
+      note1.mp3 = F
+      note2.mp3 = G
+      note3.mp3 = A
+      note4.mp3 = D
     */
-    const noteSequences = [
-      [220, 261.63, 196],    // button 1
-      [293.66, 246.94, 220], // button 2
-      [174.61, 196, 233.08], // button 3
-      [261.63, 311.13, 261.63], // button 4
-      [196, 185, 174.61]     // button 5
+    const noteFiles = {
+      F: "sounds/note1.mp3",
+      G: "sounds/note2.mp3",
+      A: "sounds/note3.mp3",
+      D: "sounds/note4.mp3"
+    };
+
+    /*
+      These are the 6 clues for SCREAM.
+
+      1) F start, left, left = S
+      2) G start, left, left, down = C
+      3) A start, right, right, right, up = R
+      4) D start, up = E
+      5) A start and end = A
+      6) G start, down, right, right = M
+    */
+    const clues = [
+      { startNote: "F", path: ["left", "left"] },
+      { startNote: "G", path: ["left", "left", "down"] },
+      { startNote: "A", path: ["right", "right", "right", "up"] },
+      { startNote: "D", path: ["up"] },
+      { startNote: "A", path: [] },
+      { startNote: "G", path: ["down", "right", "right"] }
     ];
 
-    // Keeps track of which note each button should play next
-    const notePositions = [0, 0, 0, 0, 0];
+    function playNoteForClue(clueIndex) {
+      const clue = clues[clueIndex];
+      const fileName = noteFiles[clue.startNote];
 
-    let audioContext;
-
-    function playNextNote(buttonIndex) {
-      if (!audioContext) {
-        audioContext = new AudioContext();
-      }
-
-      const sequence = noteSequences[buttonIndex];
-      const currentPosition = notePositions[buttonIndex];
-      const frequency = sequence[currentPosition];
-
-      playCreepyNote(frequency);
-
-      // Move to the next note
-      notePositions[buttonIndex]++;
-
-      // If we reached the end of the sequence, loop back to the start
-      if (notePositions[buttonIndex] >= sequence.length) {
-        notePositions[buttonIndex] = 0;
-      }
-    }
-
-    function playCreepyNote(frequency) {
-      const now = audioContext.currentTime;
-
-      // Main tone
-      const mainOscillator = audioContext.createOscillator();
-      const mainGain = audioContext.createGain();
-
-      mainOscillator.type = "sine";
-      mainOscillator.frequency.setValueAtTime(frequency, now);
-
-      // Detuned second tone to make it feel unsettling
-      const ghostOscillator = audioContext.createOscillator();
-      const ghostGain = audioContext.createGain();
-
-      ghostOscillator.type = "sawtooth";
-      ghostOscillator.frequency.setValueAtTime(frequency * 1.01, now);
-
-      // Volume shape: quick start, slow fade
-      mainGain.gain.setValueAtTime(0, now);
-      mainGain.gain.linearRampToValueAtTime(0.4, now + 0.05);
-      mainGain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
-
-      ghostGain.gain.setValueAtTime(0, now);
-      ghostGain.gain.linearRampToValueAtTime(0.08, now + 0.05);
-      ghostGain.gain.exponentialRampToValueAtTime(0.001, now + 2.2);
-
-      mainOscillator.connect(mainGain);
-      ghostOscillator.connect(ghostGain);
-
-      mainGain.connect(audioContext.destination);
-      ghostGain.connect(audioContext.destination);
-
-      mainOscillator.start(now);
-      ghostOscillator.start(now);
-
-      mainOscillator.stop(now + 2);
-      ghostOscillator.stop(now + 2.3);
+      const audio = new Audio(fileName);
+      audio.volume = 0.9;
+      audio.play();
     }
 
     function checkAnswer() {
-      const guess = document.getElementById("answerInput").value.toUpperCase();
+      const guess = document.getElementById("answerInput").value.toUpperCase().trim();
       const message = document.getElementById("message");
 
       if (guess === correctAnswer) {
-        message.textContent = "The song goes quiet.";
+        message.textContent = "Something screams behind the wall.";
         message.style.color = "red";
       } else {
-        message.textContent = "That is not what it wanted to hear.";
-        message.style.color = "#aaa";
+        message.textContent = "The room stays quiet.";
+        message.style.color = "#888";
       }
     }
   </script>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Sound Puzzle</title>
+  <title></title>
 
   <style>
     body {
@@ -9,87 +9,47 @@
       color: white;
       font-family: Georgia, serif;
       margin: 0;
-      padding: 2rem;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    .container {
-      text-align: center;
-      max-width: 1000px;
-    }
-
-    h1 {
-      font-weight: normal;
-      letter-spacing: 4px;
-      color: #ddd;
-      text-shadow: 0 0 12px darkred;
-      margin-bottom: 1rem;
-    }
-
-    .hint {
-      color: #999;
-      margin-bottom: 2rem;
-      font-size: 1rem;
-    }
-
-    .keyboard {
-      color: #777;
-      font-family: monospace;
-      white-space: pre;
-      margin-bottom: 2.5rem;
-      line-height: 1.6;
-    }
-
     .puzzle-row {
       display: flex;
-      gap: 22px;
+      gap: 24px;
       justify-content: center;
+      align-items: center;
       flex-wrap: wrap;
-      margin-bottom: 2.5rem;
+      padding: 2rem;
     }
 
-    .letter-box {
-      width: 130px;
-      min-height: 170px;
+    .box {
+      width: 120px;
+      height: 160px;
       border: 1px solid #333;
-      box-shadow: 0 0 12px #250000;
-      padding: 1rem;
       background-color: #050505;
+      box-shadow: 0 0 14px #250000;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
+      justify-content: space-around;
     }
 
-    .mystery-letter {
-      width: 60px;
-      height: 60px;
+    .blank {
+      width: 55px;
+      height: 55px;
       border-bottom: 2px solid #777;
-      font-size: 2.5rem;
-      color: #aaa;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .path {
-      color: #aaa;
-      font-size: 1.5rem;
-      letter-spacing: 4px;
-      min-height: 30px;
-      margin: 12px 0;
     }
 
     button {
       background-color: #090909;
       color: white;
       border: 1px solid #555;
-      padding: 9px 13px;
+      width: 42px;
+      height: 42px;
       cursor: pointer;
-      font-family: Georgia, serif;
+      font-size: 1.2rem;
       box-shadow: 0 0 8px #300;
     }
 
@@ -98,144 +58,73 @@
       box-shadow: 0 0 14px darkred;
     }
 
-    input {
-      background-color: black;
-      color: white;
-      border: 1px solid #777;
-      padding: 10px;
-      text-align: center;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      font-family: Georgia, serif;
-      font-size: 1rem;
-      width: 180px;
-    }
-
-    #message {
-      margin-top: 20px;
-      color: #888;
-      min-height: 24px;
+    .path {
+      color: #aaa;
+      font-size: 1.5rem;
+      letter-spacing: 4px;
+      min-height: 30px;
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>The sound remembers where to begin.</h1>
 
-    <p class="hint">
-      Identify the note. Then follow the path.
-    </p>
+  <div class="puzzle-row">
 
-    <div class="keyboard">
-Q W E R T Y U I O P
- A S D F G H J K L
-  Z X C V B N M
+    <div class="box">
+      <div class="blank"></div>
+      <button onclick="playSound(0)">▶</button>
+      <div class="path">← ←</div>
     </div>
 
-    <div class="puzzle-row">
-      <div class="letter-box">
-        <div class="mystery-letter">?</div>
-        <button onclick="playNoteForClue(0)">Listen</button>
-        <div class="path">← ←</div>
-      </div>
-
-      <div class="letter-box">
-        <div class="mystery-letter">?</div>
-        <button onclick="playNoteForClue(1)">Listen</button>
-        <div class="path">← ← ↓</div>
-      </div>
-
-      <div class="letter-box">
-        <div class="mystery-letter">?</div>
-        <button onclick="playNoteForClue(2)">Listen</button>
-        <div class="path">→ → → ↑</div>
-      </div>
-
-      <div class="letter-box">
-        <div class="mystery-letter">?</div>
-        <button onclick="playNoteForClue(3)">Listen</button>
-        <div class="path">↑</div>
-      </div>
-
-      <div class="letter-box">
-        <div class="mystery-letter">?</div>
-        <button onclick="playNoteForClue(4)">Listen</button>
-        <div class="path">stay</div>
-      </div>
-
-      <div class="letter-box">
-        <div class="mystery-letter">?</div>
-        <button onclick="playNoteForClue(5)">Listen</button>
-        <div class="path">↓ → →</div>
-      </div>
+    <div class="box">
+      <div class="blank"></div>
+      <button onclick="playSound(1)">▶</button>
+      <div class="path">← ← ↓</div>
     </div>
 
-    <input id="answerInput" maxlength="6" placeholder="enter code">
-    <button onclick="checkAnswer()">Submit</button>
+    <div class="box">
+      <div class="blank"></div>
+      <button onclick="playSound(2)">▶</button>
+      <div class="path">→ → → ↑</div>
+    </div>
 
-    <p id="message"></p>
+    <div class="box">
+      <div class="blank"></div>
+      <button onclick="playSound(3)">▶</button>
+      <div class="path">↑</div>
+    </div>
+
+    <div class="box">
+      <div class="blank"></div>
+      <button onclick="playSound(4)">▶</button>
+      <div class="path">•</div>
+    </div>
+
+    <div class="box">
+      <div class="blank"></div>
+      <button onclick="playSound(5)">▶</button>
+      <div class="path">↓ → →</div>
+    </div>
+
   </div>
 
   <script>
-    const correctAnswer = "SCREAM";
-
-    /*
-      Change this if your note files are in a different order.
-
-      Right now:
-      note1.mp3 = F
-      note2.mp3 = G
-      note3.mp3 = A
-      note4.mp3 = D
-    */
-    const noteFiles = {
-      F: "sounds/note1.mp3",
-      G: "sounds/note2.mp3",
-      A: "sounds/note3.mp3",
-      D: "sounds/note4.mp3"
-    };
-
-    /*
-      These are the 6 clues for SCREAM.
-
-      1) F start, left, left = S
-      2) G start, left, left, down = C
-      3) A start, right, right, right, up = R
-      4) D start, up = E
-      5) A start and end = A
-      6) G start, down, right, right = M
-    */
-    const clues = [
-      { startNote: "F", path: ["left", "left"] },
-      { startNote: "G", path: ["left", "left", "down"] },
-      { startNote: "A", path: ["right", "right", "right", "up"] },
-      { startNote: "D", path: ["up"] },
-      { startNote: "A", path: [] },
-      { startNote: "G", path: ["down", "right", "right"] }
+    const sounds = [
+      "note1.mp3",
+      "note2.mp3",
+      "note3.mp3",
+      "note4.mp3",
+      "note3.mp3",
+      "note2.mp3"
     ];
 
-    function playNoteForClue(clueIndex) {
-      const clue = clues[clueIndex];
-      const fileName = noteFiles[clue.startNote];
-
-      const audio = new Audio(fileName);
+    function playSound(index) {
+      const audio = new Audio(sounds[index]);
       audio.volume = 0.9;
       audio.play();
     }
-
-    function checkAnswer() {
-      const guess = document.getElementById("answerInput").value.toUpperCase().trim();
-      const message = document.getElementById("message");
-
-      if (guess === correctAnswer) {
-        message.textContent = "Something screams behind the wall.";
-        message.style.color = "red";
-      } else {
-        message.textContent = "The room stays quiet.";
-        message.style.color = "#888";
-      }
-    }
   </script>
+
 </body>
 </html>

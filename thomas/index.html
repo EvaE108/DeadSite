@@ -89,121 +89,51 @@
   </div>
 
   <script>
-    let audioContext;
-    const loadedSounds = {};
-    const clickPositions = [0, 0, 0, 0, 0];
+  const clickPositions = [0, 0, 0, 0, 0];
 
-    const boxes = [
-      {
-        file: "note1.mp3",
-        steps: ["normal", "left", "leftMore"]
-      },
-      {
-        file: "note2.mp3",
-        steps: ["normal"]
-      },
-      {
-        file: "note3.mp3",
-        steps: ["normal"]
-      },
-      {
-        file: "note4.mp3",
-        steps: ["normal"]
-      },
-      {
-        file: "note2.mp3",
-        steps: ["normal"]
-      }
-    ];
-
-    async function setupAudio() {
-      if (!audioContext) {
-        audioContext = new AudioContext();
-      }
+  const boxes = [
+    {
+      file: "note1.mp3",
+      playbackRates: [1.0, 0.8, 0.65]
+    },
+    {
+      file: "note2.mp3",
+      playbackRates: [1.0]
+    },
+    {
+      file: "note3.mp3",
+      playbackRates: [1.0]
+    },
+    {
+      file: "note4.mp3",
+      playbackRates: [1.0]
+    },
+    {
+      file: "note2.mp3",
+      playbackRates: [1.0]
     }
+  ];
 
-    async function loadSound(fileName) {
-      await setupAudio();
+  function playBox(boxIndex) {
+    const box = boxes[boxIndex];
+    const currentPosition = clickPositions[boxIndex];
 
-      if (loadedSounds[fileName]) {
-        return loadedSounds[fileName];
-      }
+    const audio = new Audio(box.file);
 
-      const response = await fetch(fileName);
-      const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    audio.playbackRate = box.playbackRates[currentPosition];
+    audio.volume = 0.9;
 
-      loadedSounds[fileName] = audioBuffer;
-      return audioBuffer;
+    audio.play().catch(function(error) {
+      console.log("Audio failed:", error);
+    });
+
+    clickPositions[boxIndex]++;
+
+    if (clickPositions[boxIndex] >= box.playbackRates.length) {
+      clickPositions[boxIndex] = 0;
     }
-
-    async function playBox(boxIndex) {
-      const box = boxes[boxIndex];
-      const currentPosition = clickPositions[boxIndex];
-      const currentStep = box.steps[currentPosition];
-
-      await playChangedSound(box.file, currentStep);
-
-      clickPositions[boxIndex]++;
-
-      if (clickPositions[boxIndex] >= box.steps.length) {
-        clickPositions[boxIndex] = 0;
-      }
-    }
-
-    async function playChangedSound(fileName, type) {
-      const buffer = await loadSound(fileName);
-
-      const source = audioContext.createBufferSource();
-      const gainNode = audioContext.createGain();
-
-      source.buffer = buffer;
-
-      const now = audioContext.currentTime;
-
-      if (type === "normal") {
-        source.playbackRate.value = 1;
-        gainNode.gain.setValueAtTime(0.75, now);
-      }
-
-      if (type === "left") {
-        source.playbackRate.value = 0.8;
-        gainNode.gain.setValueAtTime(0.75, now);
-      }
-
-      if (type === "leftMore") {
-        source.playbackRate.value = 0.65;
-        gainNode.gain.setValueAtTime(0.75, now);
-      }
-
-      if (type === "right") {
-        source.playbackRate.value = 1.25;
-        gainNode.gain.setValueAtTime(0.75, now);
-      }
-
-      if (type === "rightMore") {
-        source.playbackRate.value = 1.45;
-        gainNode.gain.setValueAtTime(0.75, now);
-      }
-
-      if (type === "up") {
-        source.playbackRate.value = 1;
-        gainNode.gain.setValueAtTime(0.25, now);
-        gainNode.gain.linearRampToValueAtTime(1.0, now + 0.5);
-      }
-
-      if (type === "down") {
-        source.playbackRate.value = 1;
-        gainNode.gain.setValueAtTime(1.0, now);
-        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.5);
-      }
-
-      source.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      source.start();
-    }
-  </script>
+  }
+</script>
 
 </body>
 </html>

@@ -2,27 +2,222 @@
 <html>
 <head>
   <title>Music</title>
+
   <style>
     body {
       background-color: black;
+      color: white;
+      font-family: Georgia, serif;
+      min-height: 100vh;
       margin: 0;
-      padding: 2rem;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
     }
 
-    img {
-      max-width: 100%;
-      height: auto;
-      box-shadow: 0 0 20px red;
+    .puzzle-container {
+      text-align: center;
+    }
+
+    h1 {
+      font-weight: normal;
+      letter-spacing: 4px;
+      color: #ddd;
+      text-shadow: 0 0 12px red;
+    }
+
+    .letters {
+      display: flex;
+      gap: 25px;
+      justify-content: center;
+      margin: 40px 0;
+    }
+
+    .letter-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .letter {
+      font-size: 3rem;
+      width: 70px;
+      height: 70px;
+      border-bottom: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+    }
+
+    button {
+      background-color: #111;
+      color: white;
+      border: 1px solid #555;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-family: Georgia, serif;
+      box-shadow: 0 0 8px #400;
+    }
+
+    button:hover {
+      background-color: #300;
+      box-shadow: 0 0 15px red;
+    }
+
+    input {
+      background-color: black;
+      color: white;
+      border: 1px solid #777;
+      padding: 10px;
+      font-size: 1rem;
+      text-align: center;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    #message {
+      margin-top: 20px;
+      color: #aaa;
+      min-height: 24px;
     }
   </style>
 </head>
+
 <body>
-  <img src="/Puzzle-Site-Mess-Around/thomas/musicpuzzle.png" alt="Music Puzzle">
+  <div class="puzzle-container">
+    <h1>The song remembers what the page forgets.</h1>
+
+    <div class="letters">
+      <div class="letter-box">
+        <div class="letter">?</div>
+        <button onclick="playNextNote(0)">Listen</button>
+      </div>
+
+      <div class="letter-box">
+        <div class="letter">?</div>
+        <button onclick="playNextNote(1)">Listen</button>
+      </div>
+
+      <div class="letter-box">
+        <div class="letter">?</div>
+        <button onclick="playNextNote(2)">Listen</button>
+      </div>
+
+      <div class="letter-box">
+        <div class="letter">?</div>
+        <button onclick="playNextNote(3)">Listen</button>
+      </div>
+
+      <div class="letter-box">
+        <div class="letter">?</div>
+        <button onclick="playNextNote(4)">Listen</button>
+      </div>
+    </div>
+
+    <input id="answerInput" maxlength="5" placeholder="enter word">
+    <button onclick="checkAnswer()">Submit</button>
+
+    <p id="message"></p>
+  </div>
+
+  <script>
+    // Change this to whatever your 5-letter answer is
+    const correctAnswer = "GHOST";
+
+    /*
+      Each group is the sound sequence for one letter.
+      When the player clicks the first button, it plays these notes in order:
+      first click = first note
+      second click = second note
+      third click = third note
+      then it loops back.
+    */
+    const noteSequences = [
+      [220, 261.63, 196],    // button 1
+      [293.66, 246.94, 220], // button 2
+      [174.61, 196, 233.08], // button 3
+      [261.63, 311.13, 261.63], // button 4
+      [196, 185, 174.61]     // button 5
+    ];
+
+    // Keeps track of which note each button should play next
+    const notePositions = [0, 0, 0, 0, 0];
+
+    let audioContext;
+
+    function playNextNote(buttonIndex) {
+      if (!audioContext) {
+        audioContext = new AudioContext();
+      }
+
+      const sequence = noteSequences[buttonIndex];
+      const currentPosition = notePositions[buttonIndex];
+      const frequency = sequence[currentPosition];
+
+      playCreepyNote(frequency);
+
+      // Move to the next note
+      notePositions[buttonIndex]++;
+
+      // If we reached the end of the sequence, loop back to the start
+      if (notePositions[buttonIndex] >= sequence.length) {
+        notePositions[buttonIndex] = 0;
+      }
+    }
+
+    function playCreepyNote(frequency) {
+      const now = audioContext.currentTime;
+
+      // Main tone
+      const mainOscillator = audioContext.createOscillator();
+      const mainGain = audioContext.createGain();
+
+      mainOscillator.type = "sine";
+      mainOscillator.frequency.setValueAtTime(frequency, now);
+
+      // Detuned second tone to make it feel unsettling
+      const ghostOscillator = audioContext.createOscillator();
+      const ghostGain = audioContext.createGain();
+
+      ghostOscillator.type = "sawtooth";
+      ghostOscillator.frequency.setValueAtTime(frequency * 1.01, now);
+
+      // Volume shape: quick start, slow fade
+      mainGain.gain.setValueAtTime(0, now);
+      mainGain.gain.linearRampToValueAtTime(0.4, now + 0.05);
+      mainGain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+
+      ghostGain.gain.setValueAtTime(0, now);
+      ghostGain.gain.linearRampToValueAtTime(0.08, now + 0.05);
+      ghostGain.gain.exponentialRampToValueAtTime(0.001, now + 2.2);
+
+      mainOscillator.connect(mainGain);
+      ghostOscillator.connect(ghostGain);
+
+      mainGain.connect(audioContext.destination);
+      ghostGain.connect(audioContext.destination);
+
+      mainOscillator.start(now);
+      ghostOscillator.start(now);
+
+      mainOscillator.stop(now + 2);
+      ghostOscillator.stop(now + 2.3);
+    }
+
+    function checkAnswer() {
+      const guess = document.getElementById("answerInput").value.toUpperCase();
+      const message = document.getElementById("message");
+
+      if (guess === correctAnswer) {
+        message.textContent = "The song goes quiet.";
+        message.style.color = "red";
+      } else {
+        message.textContent = "That is not what it wanted to hear.";
+        message.style.color = "#aaa";
+      }
+    }
+  </script>
 </body>
 </html>
-
-<!-- Ooo I can read sheet music! Wait... what the shit is this?-->

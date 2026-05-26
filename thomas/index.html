@@ -120,6 +120,10 @@
 
     const audio = new Audio(box.file);
 
+    audio.preservesPitch = false;
+audio.mozPreservesPitch = false;
+audio.webkitPreservesPitch = false;
+
     audio.playbackRate = box.playbackRates[currentPosition];
     audio.volume = 0.9;
 

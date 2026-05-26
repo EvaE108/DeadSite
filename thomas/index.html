@@ -96,73 +96,59 @@
   <script>
     const clickPositions = [0, 0, 0, 0, 0, 0];
 
-    /*
-      note1.mp3 = F
-      note2.mp3 = G
-      note3.mp3 = A
-      note4.mp3 = D
-
-      Each box cycles through its sounds every time it is clicked.
-    */
     const boxes = [
-      // Box 1: F, then E, then D
       {
         file: "note1.mp3",
         steps: [
-          { rate: 1.0, effect: "normal" },        // F
-          { rate: 0.943874, effect: "normal" },   // E
-          { rate: 0.840896, effect: "normal" }    // D
+          { rate: 1.0, effect: "normal" },
+          { rate: 0.943874, effect: "normal" },
+          { rate: 0.840896, effect: "normal" }
         ]
       },
 
-      // Box 2: G, then F, then E, then volume down
       {
         file: "note2.mp3",
         steps: [
-          { rate: 1.0, effect: "normal" },        // G
-          { rate: 0.890899, effect: "normal" },   // F
-          { rate: 0.840896, effect: "normal" },   // E
-          { rate: 0.840896, effect: "down" }      // volume down dramatically
+          { rate: 1.0, effect: "normal" },
+          { rate: 0.890899, effect: "normal" },
+          { rate: 0.840896, effect: "normal" },
+          { rate: 0.840896, effect: "down" }
         ]
       },
 
-      // Box 3: A, then B, then C, then D, then volume up
       {
         file: "note3.mp3",
         steps: [
-          { rate: 1.0, effect: "normal" },        // A
-          { rate: 1.122462, effect: "normal" },   // B
-          { rate: 1.189207, effect: "normal" },   // C
-          { rate: 1.334840, effect: "normal" },   // D
-          { rate: 1.334840, effect: "up" }        // volume up dramatically
+          { rate: 1.0, effect: "normal" },
+          { rate: 1.122462, effect: "normal" },
+          { rate: 1.189207, effect: "normal" },
+          { rate: 1.334840, effect: "normal" },
+          { rate: 1.334840, effect: "up" }
         ]
       },
 
-      // Box 4: D, then E
       {
         file: "note4.mp3",
         steps: [
-          { rate: 1.0, effect: "normal" },        // D
-          { rate: 1.122462, effect: "normal" }    // E
+          { rate: 1.0, effect: "normal" },
+          { rate: 1.122462, effect: "normal" }
         ]
       },
 
-      // Box 5: A only
       {
         file: "note3.mp3",
         steps: [
-          { rate: 1.0, effect: "normal" }         // A
+          { rate: 1.0, effect: "normal" }
         ]
       },
 
-      // Box 6: G, then volume down, then A, then B
       {
         file: "note2.mp3",
         steps: [
-          { rate: 1.0, effect: "normal" },        // G
-          { rate: 1.0, effect: "down" },          // volume down dramatically
-          { rate: 1.122462, effect: "normal" },   // A
-          { rate: 1.259921, effect: "normal" }    // B
+          { rate: 1.0, effect: "normal" },
+          { rate: 1.0, effect: "down" },
+          { rate: 1.122462, effect: "normal" },
+          { rate: 1.259921, effect: "normal" }
         ]
       }
     ];
@@ -174,7 +160,6 @@
 
       const audio = new Audio(box.file);
 
-      // This is the important part that lets playbackRate actually change the pitch
       audio.preservesPitch = false;
       audio.mozPreservesPitch = false;
       audio.webkitPreservesPitch = false;
@@ -182,15 +167,13 @@
       audio.playbackRate = step.rate;
 
       if (step.effect === "normal") {
-        audio.volume = 0.9;
+        audio.volume = 0.25;
       }
       else if (step.effect === "down") {
-        audio.volume = 1.0;
-        fadeVolume(audio, 1.0, 0.02, 800);
+        audio.volume = 0.03;
       }
       else if (step.effect === "up") {
-        audio.volume = 0.03;
-        fadeVolume(audio, 0.03, 1.0, 800);
+        audio.volume = 1.0;
       }
 
       audio.play().catch(function(error) {
@@ -202,21 +185,6 @@
       if (clickPositions[boxIndex] >= box.steps.length) {
         clickPositions[boxIndex] = 0;
       }
-    }
-
-    function fadeVolume(audio, startVolume, endVolume, duration) {
-      const startTime = Date.now();
-
-      const fade = setInterval(function() {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        audio.volume = startVolume + (endVolume - startVolume) * progress;
-
-        if (progress >= 1) {
-          clearInterval(fade);
-        }
-      }, 30);
     }
   </script>
 

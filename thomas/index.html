@@ -93,32 +93,22 @@
     const loadedSounds = {};
     const clickPositions = [0, 0, 0, 0, 0];
 
-    /*
-      The first item is always the normal note.
-      After that:
-      right = pitch up
-      left = pitch down
-      up = volume gets louder
-      down = volume gets quieter
-
-      The mp3 files need to be in the same folder as this index.html file.
-    */
     const boxes = [
       {
         file: "note1.mp3",
-        steps: ["normal", "left", "left"]
+        steps: ["normal", "left", "leftMore"]
       },
       {
         file: "note2.mp3",
-        steps: ["normal", "left", "left", "down"]
+        steps: ["normal"]
       },
       {
         file: "note3.mp3",
-        steps: ["normal", "right", "right", "right", "up"]
+        steps: ["normal"]
       },
       {
         file: "note4.mp3",
-        steps: ["normal", "up"]
+        steps: ["normal"]
       },
       {
         file: "note2.mp3",
@@ -149,16 +139,14 @@
 
     async function playBox(boxIndex) {
       const box = boxes[boxIndex];
-      const steps = box.steps;
-
       const currentPosition = clickPositions[boxIndex];
-      const currentStep = steps[currentPosition];
+      const currentStep = box.steps[currentPosition];
 
       await playChangedSound(box.file, currentStep);
 
       clickPositions[boxIndex]++;
 
-      if (clickPositions[boxIndex] >= steps.length) {
+      if (clickPositions[boxIndex] >= box.steps.length) {
         clickPositions[boxIndex] = 0;
       }
     }
@@ -178,13 +166,23 @@
         gainNode.gain.setValueAtTime(0.75, now);
       }
 
+      if (type === "left") {
+        source.playbackRate.value = 0.8;
+        gainNode.gain.setValueAtTime(0.75, now);
+      }
+
+      if (type === "leftMore") {
+        source.playbackRate.value = 0.65;
+        gainNode.gain.setValueAtTime(0.75, now);
+      }
+
       if (type === "right") {
         source.playbackRate.value = 1.25;
         gainNode.gain.setValueAtTime(0.75, now);
       }
 
-      if (type === "left") {
-        source.playbackRate.value = 0.8;
+      if (type === "rightMore") {
+        source.playbackRate.value = 1.45;
         gainNode.gain.setValueAtTime(0.75, now);
       }
 

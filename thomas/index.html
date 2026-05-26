@@ -6,40 +6,39 @@
   <style>
     body {
       background-color: black;
-      color: white;
-      font-family: Georgia, serif;
       margin: 0;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      font-family: Georgia, serif;
     }
 
     .puzzle-row {
       display: flex;
-      gap: 24px;
+      gap: 28px;
       justify-content: center;
       align-items: center;
       flex-wrap: wrap;
-      padding: 2rem;
     }
 
     .box {
       width: 120px;
-      height: 160px;
+      height: 150px;
       border: 1px solid #333;
       background-color: #050505;
       box-shadow: 0 0 14px #250000;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-around;
+      justify-content: center;
+      gap: 22px;
     }
 
-    .blank {
-      width: 55px;
-      height: 55px;
-      border-bottom: 2px solid #777;
+    .question {
+      color: #aaa;
+      font-size: 3rem;
+      text-shadow: 0 0 10px darkred;
     }
 
     button {
@@ -49,7 +48,7 @@
       width: 42px;
       height: 42px;
       cursor: pointer;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       box-shadow: 0 0 8px #300;
     }
 
@@ -57,72 +56,154 @@
       background-color: #250000;
       box-shadow: 0 0 14px darkred;
     }
-
-    .path {
-      color: #aaa;
-      font-size: 1.5rem;
-      letter-spacing: 4px;
-      min-height: 30px;
-    }
   </style>
 </head>
 
 <body>
 
   <div class="puzzle-row">
-
     <div class="box">
-      <div class="blank"></div>
-      <button onclick="playSound(0)">▶</button>
-      <div class="path">← ←</div>
+      <div class="question">?</div>
+      <button onclick="playBox(0)">▶</button>
     </div>
 
     <div class="box">
-      <div class="blank"></div>
-      <button onclick="playSound(1)">▶</button>
-      <div class="path">← ← ↓</div>
+      <div class="question">?</div>
+      <button onclick="playBox(1)">▶</button>
     </div>
 
     <div class="box">
-      <div class="blank"></div>
-      <button onclick="playSound(2)">▶</button>
-      <div class="path">→ → → ↑</div>
+      <div class="question">?</div>
+      <button onclick="playBox(2)">▶</button>
     </div>
 
     <div class="box">
-      <div class="blank"></div>
-      <button onclick="playSound(3)">▶</button>
-      <div class="path">↑</div>
+      <div class="question">?</div>
+      <button onclick="playBox(3)">▶</button>
     </div>
 
     <div class="box">
-      <div class="blank"></div>
-      <button onclick="playSound(4)">▶</button>
-      <div class="path">•</div>
+      <div class="question">?</div>
+      <button onclick="playBox(4)">▶</button>
     </div>
-
-    <div class="box">
-      <div class="blank"></div>
-      <button onclick="playSound(5)">▶</button>
-      <div class="path">↓ → →</div>
-    </div>
-
   </div>
 
   <script>
-    const sounds = [
-      "note1.mp3",
-      "note2.mp3",
-      "note3.mp3",
-      "note4.mp3",
-      "note3.mp3",
-      "note2.mp3"
+    let audioContext;
+    const loadedSounds = {};
+    const clickPositions = [0, 0, 0, 0, 0];
+
+    /*
+      The first item is always the normal note.
+      After that:
+      right = pitch up
+      left = pitch down
+      up = volume gets louder
+      down = volume gets quieter
+
+      The mp3 files need to be in the same folder as this index.html file.
+    */
+    const boxes = [
+      {
+        file: "note1.mp3",
+        steps: ["normal", "left", "left"]
+      },
+      {
+        file: "note2.mp3",
+        steps: ["normal", "left", "left", "down"]
+      },
+      {
+        file: "note3.mp3",
+        steps: ["normal", "right", "right", "right", "up"]
+      },
+      {
+        file: "note4.mp3",
+        steps: ["normal", "up"]
+      },
+      {
+        file: "note2.mp3",
+        steps: ["normal"]
+      }
     ];
 
-    function playSound(index) {
-      const audio = new Audio(sounds[index]);
-      audio.volume = 0.9;
-      audio.play();
+    async function setupAudio() {
+      if (!audioContext) {
+        audioContext = new AudioContext();
+      }
+    }
+
+    async function loadSound(fileName) {
+      await setupAudio();
+
+      if (loadedSounds[fileName]) {
+        return loadedSounds[fileName];
+      }
+
+      const response = await fetch(fileName);
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+      loadedSounds[fileName] = audioBuffer;
+      return audioBuffer;
+    }
+
+    async function playBox(boxIndex) {
+      const box = boxes[boxIndex];
+      const steps = box.steps;
+
+      const currentPosition = clickPositions[boxIndex];
+      const currentStep = steps[currentPosition];
+
+      await playChangedSound(box.file, currentStep);
+
+      clickPositions[boxIndex]++;
+
+      if (clickPositions[boxIndex] >= steps.length) {
+        clickPositions[boxIndex] = 0;
+      }
+    }
+
+    async function playChangedSound(fileName, type) {
+      const buffer = await loadSound(fileName);
+
+      const source = audioContext.createBufferSource();
+      const gainNode = audioContext.createGain();
+
+      source.buffer = buffer;
+
+      const now = audioContext.currentTime;
+
+      if (type === "normal") {
+        source.playbackRate.value = 1;
+        gainNode.gain.setValueAtTime(0.75, now);
+      }
+
+      if (type === "right") {
+        source.playbackRate.value = 1.25;
+        gainNode.gain.setValueAtTime(0.75, now);
+      }
+
+      if (type === "left") {
+        source.playbackRate.value = 0.8;
+        gainNode.gain.setValueAtTime(0.75, now);
+      }
+
+      if (type === "up") {
+        source.playbackRate.value = 1;
+        gainNode.gain.setValueAtTime(0.25, now);
+        gainNode.gain.linearRampToValueAtTime(1.0, now + 0.5);
+      }
+
+      if (type === "down") {
+        source.playbackRate.value = 1;
+        gainNode.gain.setValueAtTime(1.0, now);
+        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.5);
+      }
+
+      source.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      source.start();
     }
   </script>
 

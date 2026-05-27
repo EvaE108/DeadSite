@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- This ones a doosey. Hope you're good with **keys** (; -->
 <html>
 <head>
   <title></title>
@@ -93,100 +94,100 @@
     </div>
   </div>
 
-  <script>
-    const clickPositions = [0, 0, 0, 0, 0, 0];
+<script>
+  const clickPositions = [0, 0, 0, 0, 0, 0];
 
-    const boxes = [
-      {
-        file: "note1.mp3",
-        steps: [
-          { rate: 1.0, effect: "normal" },
-          { rate: 0.943874, effect: "normal" },
-          { rate: 0.840896, effect: "normal" }
-        ]
-      },
+  const boxes = [
+    {
+      file: "note1.mp3",
+      steps: [
+        { rate: 1.0, effect: "x" },
+        { rate: 0.943874, effect: "x" },
+        { rate: 0.840896, effect: "x" }
+      ]
+    },
 
-      {
-        file: "note2.mp3",
-        steps: [
-          { rate: 1.0, effect: "normal" },
-          { rate: 0.890899, effect: "normal" },
-          { rate: 0.840896, effect: "normal" },
-          { rate: 0.840896, effect: "down" }
-        ]
-      },
+    {
+      file: "note2.mp3",
+      steps: [
+        { rate: 1.0, effect: "x" },
+        { rate: 0.890899, effect: "x" },
+        { rate: 0.840896, effect: "x" },
+        { rate: 0.840896, effect: "y" }
+      ]
+    },
 
-      {
-        file: "note3.mp3",
-        steps: [
-          { rate: 1.0, effect: "normal" },
-          { rate: 1.122462, effect: "normal" },
-          { rate: 1.189207, effect: "normal" },
-          { rate: 1.334840, effect: "normal" },
-          { rate: 1.334840, effect: "up" }
-        ]
-      },
+    {
+      file: "note3.mp3",
+      steps: [
+        { rate: 1.0, effect: "x" },
+        { rate: 1.122462, effect: "x" },
+        { rate: 1.189207, effect: "x" },
+        { rate: 1.334840, effect: "x" },
+        { rate: 1.334840, effect: "z" }
+      ]
+    },
 
-      {
-        file: "note4.mp3",
-        steps: [
-          { rate: 1.0, effect: "normal" },
-          { rate: 1.122462, effect: "normal" }
-        ]
-      },
+    {
+      file: "note4.mp3",
+      steps: [
+        { rate: 1.0, effect: "x" },
+        { rate: 1.122462, effect: "x" }
+      ]
+    },
 
-      {
-        file: "note3.mp3",
-        steps: [
-          { rate: 1.0, effect: "normal" }
-        ]
-      },
+    {
+      file: "note3.mp3",
+      steps: [
+        { rate: 1.0, effect: "x" }
+      ]
+    },
 
-      {
-        file: "note2.mp3",
-        steps: [
-          { rate: 1.0, effect: "normal" },
-          { rate: 1.0, effect: "down" },
-          { rate: 1.122462, effect: "normal" },
-          { rate: 1.259921, effect: "normal" }
-        ]
-      }
-    ];
-
-    function playBox(boxIndex) {
-      const box = boxes[boxIndex];
-      const currentPosition = clickPositions[boxIndex];
-      const step = box.steps[currentPosition];
-
-      const audio = new Audio(box.file);
-
-      audio.preservesPitch = false;
-      audio.mozPreservesPitch = false;
-      audio.webkitPreservesPitch = false;
-
-      audio.playbackRate = step.rate;
-
-      if (step.effect === "normal") {
-        audio.volume = 0.25;
-      }
-      else if (step.effect === "down") {
-        audio.volume = 0.03;
-      }
-      else if (step.effect === "up") {
-        audio.volume = 1.0;
-      }
-
-      audio.play().catch(function(error) {
-        console.log("Audio failed:", error);
-      });
-
-      clickPositions[boxIndex]++;
-
-      if (clickPositions[boxIndex] >= box.steps.length) {
-        clickPositions[boxIndex] = 0;
-      }
+    {
+      file: "note2.mp3",
+      steps: [
+        { rate: 1.0, effect: "x" },
+        { rate: 1.0, effect: "y" },
+        { rate: 1.122462, effect: "x" },
+        { rate: 1.259921, effect: "x" }
+      ]
     }
-  </script>
+  ];
+
+  function playBox(boxIndex) {
+    const box = boxes[boxIndex];
+    const currentPosition = clickPositions[boxIndex];
+    const step = box.steps[currentPosition];
+
+    const audio = new Audio(box.file);
+
+    audio.preservesPitch = false;
+    audio.mozPreservesPitch = false;
+    audio.webkitPreservesPitch = false;
+
+    audio.playbackRate = step.rate;
+
+    if (step.effect === "x") {
+      audio.volume = 0.25;
+    }
+    else if (step.effect === "y") {
+      audio.volume = 0.03;
+    }
+    else if (step.effect === "z") {
+      audio.volume = 1.0;
+    }
+
+    audio.play().catch(function(error) {
+      console.log("Audio failed:", error);
+    });
+
+    clickPositions[boxIndex]++;
+
+    if (clickPositions[boxIndex] >= box.steps.length) {
+      clickPositions[boxIndex] = 0;
+    }
+  }
+</script>
 
 </body>
 </html>

@@ -2,43 +2,85 @@
 <html>
  <head>
   <title>Congratulations!</title>
-      <style>
-       
-      
-        body {
-            background-color: black;
-            color: red;
-            font-family: 'Courier New', monospace;
-            padding: 3rem;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-          }
-      
-         p {
-            margin: 1rem auto;
-            max-width: 600px;
-            line-height: 1.6;
-            font-size: 1.2rem;
-          }
+  <style>
+    body {
+      background-color: black;
+      color: red;
+      font-family: 'Courier New', monospace;
+      padding: 3rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
 
+    p {
+      margin: 1rem auto;
+      max-width: 600px;
+      line-height: 1.6;
+      font-size: 1.2rem;
+      text-shadow: 0 0 10px red;
+      z-index: 2;
+    }
 
-      </style>
+    .confetti {
+      position: fixed;
+      top: -20px;
+      font-size: 1.2rem;
+      color: red;
+      animation: fall linear forwards;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-20px) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+  </style>
  </head>
-      
-      <body>
-        <p>So you have passed my twisted test<br>
-           Now your mind can lay to rest <br>
-           I hope you had some fear and fun along the way <br>
-           Hopefully you will return one day<br>
-           If you thought there was a prize<br>
-           Then you were wrong sorry :)</p>
 
-         <div id="x"><br><br><br></div>
-       
-       
-      </body>
+ <body>
+  <p>So you have passed my twisted test<br>
+     Now your mind can lay to rest <br>
+     I hope you had some fear and fun along the way <br>
+     Hopefully you will return one day<br>
+     If you thought there was a prize<br>
+     Then you were wrong sorry :)</p>
+
+  <div id="x"><br><br><br></div>
+
+  <script>
+    const symbols = ["✦", "✧", "★", "✶", "†", "☾", "♦"];
+
+    function makeConfetti() {
+      const piece = document.createElement("div");
+      piece.classList.add("confetti");
+
+      piece.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      piece.style.left = Math.random() * 100 + "vw";
+      piece.style.animationDuration = Math.random() * 2 + 3 + "s";
+      piece.style.fontSize = Math.random() * 1.2 + 0.8 + "rem";
+      piece.style.opacity = Math.random() * 0.7 + 0.3;
+
+      document.body.appendChild(piece);
+
+      setTimeout(function() {
+        piece.remove();
+      }, 5000);
+    }
+
+    setInterval(makeConfetti, 120);
+  </script>
+ </body>
 </html>

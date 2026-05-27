@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- This ones a doosey. Hope you're good with **keys** (; -->
 <html>
 <head>
   <title></title>
@@ -34,6 +33,27 @@
       align-items: center;
       justify-content: center;
       gap: 22px;
+    }
+
+    .box.start-glow {
+      animation: startGlow 0.45s ease-out;
+    }
+
+    @keyframes startGlow {
+      0% {
+        box-shadow: 0 0 4px #250000;
+        border-color: #333;
+      }
+
+      40% {
+        box-shadow: 0 0 22px darkred;
+        border-color: #700;
+      }
+
+      100% {
+        box-shadow: 0 0 14px #250000;
+        border-color: #333;
+      }
     }
 
     .question {
@@ -94,100 +114,108 @@
     </div>
   </div>
 
-<script>
-  const clickPositions = [0, 0, 0, 0, 0, 0];
+  <script>
+    const clickPositions = [0, 0, 0, 0, 0, 0];
 
-  const boxes = [
-    {
-      file: "note1.mp3",
-      steps: [
-        { rate: 1.0, effect: "x" },
-        { rate: 0.943874, effect: "x" },
-        { rate: 0.840896, effect: "x" }
-      ]
-    },
+    const boxes = [
+      {
+        file: "note1.mp3",
+        steps: [
+          { rate: 1.0, effect: "x" },
+          { rate: 0.943874, effect: "x" },
+          { rate: 0.840896, effect: "x" }
+        ]
+      },
 
-    {
-      file: "note2.mp3",
-      steps: [
-        { rate: 1.0, effect: "x" },
-        { rate: 0.890899, effect: "x" },
-        { rate: 0.840896, effect: "x" },
-        { rate: 0.840896, effect: "y" }
-      ]
-    },
+      {
+        file: "note2.mp3",
+        steps: [
+          { rate: 1.0, effect: "x" },
+          { rate: 0.890899, effect: "x" },
+          { rate: 0.840896, effect: "x" },
+          { rate: 0.840896, effect: "y" }
+        ]
+      },
 
-    {
-      file: "note3.mp3",
-      steps: [
-        { rate: 1.0, effect: "x" },
-        { rate: 1.122462, effect: "x" },
-        { rate: 1.189207, effect: "x" },
-        { rate: 1.334840, effect: "x" },
-        { rate: 1.334840, effect: "z" }
-      ]
-    },
+      {
+        file: "note3.mp3",
+        steps: [
+          { rate: 1.0, effect: "x" },
+          { rate: 1.122462, effect: "x" },
+          { rate: 1.189207, effect: "x" },
+          { rate: 1.334840, effect: "x" },
+          { rate: 1.334840, effect: "z" }
+        ]
+      },
 
-    {
-  file: "note4.mp3",
-  steps: [
-    { rate: 1.0, effect: "x" },
-    { rate: 1.0, effect: "z" }
-  ]
-},
+      {
+        file: "note4.mp3",
+        steps: [
+          { rate: 1.0, effect: "x" },
+          { rate: 1.0, effect: "z" }
+        ]
+      },
 
-    {
-      file: "note3.mp3",
-      steps: [
-        { rate: 1.0, effect: "x" }
-      ]
-    },
+      {
+        file: "note3.mp3",
+        steps: [
+          { rate: 1.0, effect: "x" }
+        ]
+      },
 
-    {
-      file: "note2.mp3",
-      steps: [
-        { rate: 1.0, effect: "x" },
-        { rate: 1.0, effect: "y" },
-        { rate: 1.122462, effect: "x" },
-        { rate: 1.259921, effect: "x" }
-      ]
+      {
+        file: "note2.mp3",
+        steps: [
+          { rate: 1.0, effect: "x" },
+          { rate: 1.0, effect: "y" },
+          { rate: 1.122462, effect: "x" },
+          { rate: 1.259921, effect: "x" }
+        ]
+      }
+    ];
+
+    function playBox(boxIndex) {
+      const box = boxes[boxIndex];
+      const currentPosition = clickPositions[boxIndex];
+      const step = box.steps[currentPosition];
+
+      const currentBox = document.querySelectorAll(".box")[boxIndex];
+
+      if (currentPosition === 0) {
+        currentBox.classList.remove("start-glow");
+        void currentBox.offsetWidth;
+        currentBox.classList.add("start-glow");
+      }
+
+      const audio = new Audio(box.file);
+
+      audio.preservesPitch = false;
+      audio.mozPreservesPitch = false;
+      audio.webkitPreservesPitch = false;
+
+      audio.playbackRate = step.rate;
+
+      if (step.effect === "x") {
+        audio.volume = 0.25;
+      }
+      else if (step.effect === "y") {
+        audio.volume = 0.03;
+      }
+      else if (step.effect === "z") {
+        audio.volume = 1.0;
+      }
+
+      audio.play().catch(function(error) {
+        console.log("Audio failed:", error);
+      });
+
+      clickPositions[boxIndex]++;
+
+      if (clickPositions[boxIndex] >= box.steps.length) {
+        clickPositions[boxIndex] = 0;
+      }
     }
-  ];
-
-  function playBox(boxIndex) {
-    const box = boxes[boxIndex];
-    const currentPosition = clickPositions[boxIndex];
-    const step = box.steps[currentPosition];
-
-    const audio = new Audio(box.file);
-
-    audio.preservesPitch = false;
-    audio.mozPreservesPitch = false;
-    audio.webkitPreservesPitch = false;
-
-    audio.playbackRate = step.rate;
-
-    if (step.effect === "x") {
-      audio.volume = 0.25;
-    }
-    else if (step.effect === "y") {
-      audio.volume = 0.03;
-    }
-    else if (step.effect === "z") {
-      audio.volume = 1.0;
-    }
-
-    audio.play().catch(function(error) {
-      console.log("Audio failed:", error);
-    });
-
-    clickPositions[boxIndex]++;
-
-    if (clickPositions[boxIndex] >= box.steps.length) {
-      clickPositions[boxIndex] = 0;
-    }
-  }
-</script>
+  </script>
 
 </body>
 </html>
